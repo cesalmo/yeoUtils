@@ -7,7 +7,7 @@ var Generator = require('yeoman-generator');
  *  kunnr kna1,
  * 
  */
- 
+
 module.exports = class extends Generator {
 
     async prompting() {
@@ -32,40 +32,47 @@ module.exports = class extends Generator {
 
     processing() {
         var nombreArchivo = this.oPreguntas.nombreArchivoInput;
-        // @ts-ignore
-        var sTypes = this.fs.read(this.contextRoot + '/' + nombreArchivo);
-        var sTypesNoSpaces = sTypes.replace(/\s+/g, ' ').trim();
-
-        // elimina ultima coma si la hay
-        if (sTypesNoSpaces[sTypesNoSpaces.length - 1] === ',') {
-            var sTypesNoSpaces2 = sTypesNoSpaces.substring(0, sTypesNoSpaces.length - 1);
-        } else {
-            sTypesNoSpaces2 = sTypesNoSpaces;
-        }
-        // crea array
-        var oArrayTypes = sTypesNoSpaces2.split(',');
         
-        // crea string de salida
-        var oResult = oArrayTypes.map(
-            (a) => {
-                var sfname = a.trim().split(' ')[0];
-                var tabData = a.trim().split(' ')[1].split('-');
+        try {
+            // @ts-ignore
+            var sTypes = this.fs.read(this.contextRoot + '/' + nombreArchivo);
+
+            var sTypesNoSpaces = sTypes.replace(/\s+/g, ' ').trim();
+
+            // elimina ultima coma si la hay
+            if (sTypesNoSpaces[sTypesNoSpaces.length - 1] === ',') {
+                var sTypesNoSpaces2 = sTypesNoSpaces.substring(0, sTypesNoSpaces.length - 1).toUpperCase();
+            } else {
+                sTypesNoSpaces2 = sTypesNoSpaces.toUpperCase();
+            }
+            // crea array
+            var oArrayTypes = sTypesNoSpaces2.split(',');
+
+            // crea string de salida
+            var oResult = oArrayTypes.map(
+                (a) => {
+                    var sfname = a.trim().split(' ')[0];
+                    var tabData = a.trim().split(' ')[1].split('-');
 
 
-                if (tabData.length === 2) {
-                    // tabla-campo
-                    var tfield = tabData[1];
-                    var tname = tabData[0];
-                } else {
-                    // tabla
-                    var tfield = sfname;
-                    var tname = tabData[0];
-                };
+                    if (tabData.length === 2) {
+                        // tabla-campo
+                        var tfield = tabData[1];
+                        var tname = tabData[0];
+                    } else {
+                        // tabla
+                        var tfield = sfname;
+                        var tname = tabData[0];
+                    };
 
-                return `(  tabname = '1' fieldname = '${sfname}'  ref_table = '${tname}' ref_field = '${tfield}' )`
-            });
-            
+                    return `( fieldname = '${sfname}'  ref_table = '${tname}' ref_field = '${tfield}' scrtext_m = TEXT-010 scrtext_s = TEXT-010 scrtext_l = TEXT-010 COLTEXT = TEXT-010 )"tech = abap_true edit = abap_true  checkbox = abap_true inttype = 'D' )`
+                });
+
             this.sResult = oResult.join('\n');
+        } catch (e) {
+            this.sResult = "";
+        }
+
 
     }
 

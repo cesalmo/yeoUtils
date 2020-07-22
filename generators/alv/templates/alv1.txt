@@ -1,6 +1,12 @@
+ CLASS lcl<%= sufijo %> DEFINITION.
 
+  PUBLIC SECTION.
+
+ TYPES:
+      gty_tt_lips TYPE STANDARD TABLE OF lips
+      .
  CLASS-DATA:
-      gt_alv<%= sufijo %>   TYPE gty_tt_alv,
+      gt_alv<%= sufijo %>   TYPE gty_tt_lips,
       go_gridc<%= sufijo %> TYPE REF TO cl_gui_alv_grid
       .
 
@@ -8,7 +14,9 @@
 class-methods:
 
     muestra_alv<%= sufijo %>
-    ,
+    .
+PRIVATE SECTION.
+  CLASS-METHODS:
      get_fieldcatalog<%= sufijo %>
         RETURNING VALUE(rt_return) TYPE lvc_t_fcat
     ,
@@ -38,11 +46,11 @@ class-methods:
     ,
     get_sort<%= sufijo %>
         RETURNING VALUE(rt_return) TYPE lvc_t_sort
+    .
+ENDCLASS.
 
 
-
-
-
+CLASS lcl<%= sufijo %> IMPLEMENTATION.
 
 
 METHOD muestra_alv<%= sufijo %>.
@@ -61,32 +69,32 @@ METHOD muestra_alv<%= sufijo %>.
                                          row    = 1
                                          column = 1  ).
 										 							 
-    lcl=>go_gridc<%= sufijo %> =  NEW cl_gui_alv_grid(
+    lcl<%= sufijo %>=>go_gridc<%= sufijo %> =  NEW cl_gui_alv_grid(
                                          i_parent =  lo_cell_top<%= sufijo %> ).
 										 
-     DATA(lt_fieldcatalog<%= sufijo %>) = lcl=>get_fieldcatalog<%= sufijo %>( ).
+     DATA(lt_fieldcatalog<%= sufijo %>) = lcl<%= sufijo %>=>get_fieldcatalog<%= sufijo %>( ).
 
-    DATA(ls_layout<%= sufijo %>) = lcl=>get_layout<%= sufijo %>( ).
+    DATA(ls_layout<%= sufijo %>) = lcl<%= sufijo %>=>get_layout<%= sufijo %>( ).
 
-    DATA(lt_excluding<%= sufijo %>) = lcl=>get_excluding<%= sufijo %>( ).
+    DATA(lt_excluding<%= sufijo %>) = lcl<%= sufijo %>=>get_excluding<%= sufijo %>( ).
 	
     DATA(ls_variant<%= sufijo %>) = VALUE disvariant( report = sy-repid   ).
 	
-	  DATA(lt_sort<%= sufijo %>) = lcl=>get_sort<%= sufijo %>( ).
+	  DATA(lt_sort<%= sufijo %>) = lcl<%= sufijo %>=>get_sort<%= sufijo %>( ).
 	
-    lcl=>go_gridc<%= sufijo %>->register_edit_event( cl_gui_alv_grid=>mc_evt_modified ).
-    lcl=>go_gridc<%= sufijo %>->register_edit_event( cl_gui_alv_grid=>mc_evt_enter ).
+    lcl<%= sufijo %>=>go_gridc<%= sufijo %>->register_edit_event( cl_gui_alv_grid=>mc_evt_modified ).
+    lcl<%= sufijo %>=>go_gridc<%= sufijo %>->register_edit_event( cl_gui_alv_grid=>mc_evt_enter ).
 
     SET HANDLER:
-   lcl=>handle_toolbar<%= sufijo %>      FOR lcl=>go_gridc<%= sufijo %>,
-   lcl=>handle_user_command<%= sufijo %> FOR lcl=><%= sufijo %>go_gridc,
-   lcl=>data_changed<%= sufijo %>        FOR lcl=>go_gridc<%= sufijo %>,
-   lcl=>handle_hotspot_click<%= sufijo %> FOR lcl=>go_gridc<%= sufijo %>
+   lcl<%= sufijo %>=>handle_toolbar<%= sufijo %>      FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>,
+   lcl<%= sufijo %>=>handle_user_command<%= sufijo %> FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>,
+   lcl<%= sufijo %>=>data_changed<%= sufijo %>        FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>,
+   lcl<%= sufijo %>=>handle_hotspot_click<%= sufijo %> FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>
        .
 
 * https://help.sap.com/saphelp_46c/helpdata/en/0a/b5533cd30911d2b467006094192fe3/content.htm?no_cache=true
 	   
-	lcl=>go_gridc<%= sufijo %>->set_table_for_first_display(
+	lcl<%= sufijo %>=>go_gridc<%= sufijo %>->set_table_for_first_display(
         EXPORTING
 		is_variant                    = ls_variant<%= sufijo %>
 		i_save                        = 'A'        "muesetra boton de guardar variantes
@@ -94,7 +102,7 @@ METHOD muestra_alv<%= sufijo %>.
           it_toolbar_excluding          = lt_excluding<%= sufijo %>
         CHANGING
 		it_sort              		= lt_sort<%= sufijo %>
-          it_outtab                     = lcl=>gt_alv<%= sufijo %>
+          it_outtab                     = lcl<%= sufijo %>=>gt_alv<%= sufijo %>
           it_fieldcatalog               = lt_fieldcatalog<%= sufijo %>
         EXCEPTIONS
           invalid_parameter_combination = 1
@@ -108,7 +116,7 @@ METHOD muestra_alv<%= sufijo %>.
 		
     CALL SCREEN '9000'.
 	
-ENDMETHOD muestra_alv<%= sufijo %>.
+ENDMETHOD.
 
 METHOD get_fieldcatalog<%= sufijo %>.
 
@@ -218,33 +226,35 @@ METHOD data_changed<%= sufijo %>.
   endmethod.
 
   METHOD handle_hotspot_click<%= sufijo %>.
-*
-    CASE e_column_id-fieldname.
-      WHEN 'ENTREGA_SAL'.
-* nº de fila en: es_row_no-row_id
-      WHEN OTHERS.
-    ENDCASE.
+
+*    CASE e_column_id-fieldname.
+*      WHEN 'ENTREGA_SAL'.
+** nº de fila en: es_row_no-row_id
+*      WHEN OTHERS.
+*    ENDCASE.
 
   ENDMETHOD.
 
 METHOD get_sort<%= sufijo %>.
 
-    rt_return = VALUE #( (
-      fieldname = 'WERKS'
-      spos      = 1
-      up        = abap_true
-      ) (
-      fieldname = 'PRODT'
-      spos      = 2
-      up        = abap_true
-      ) (
-      fieldname = 'PRODT_TX'
-      spos      = 3
-      up        = abap_true
-            ) (
-      fieldname = 'NAME1'
-      spos      = 4
-      up        = abap_true
-       ) ).
+*    rt_return = VALUE #( (
+*      fieldname = 'WERKS'
+*      spos      = 1
+*      up        = abap_true
+*      ) (
+*      fieldname = 'PRODT'
+*      spos      = 2
+*      up        = abap_true
+*      ) (
+*      fieldname = 'PRODT_TX'
+*      spos      = 3
+*      up        = abap_true
+*            ) (
+*      fieldname = 'NAME1'
+*      spos      = 4
+*      up        = abap_true
+*       ) ).
 
   ENDMETHOD.
+
+endclass.

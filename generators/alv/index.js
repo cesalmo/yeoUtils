@@ -33,6 +33,7 @@ module.exports = class extends Generator {
         
         var nombreArchivo = this.oSufijo.filename + '.txt';
         // path desde donde ha sido llamado yeoman
+        // @ts-ignore
         var destinoArchivo = this.contextRoot + '/' + nombreArchivo;
         this.fs.copyTpl(
             this.templatePath('alv1.txt'),
