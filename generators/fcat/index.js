@@ -1,9 +1,16 @@
 var Generator = require('yeoman-generator');
 
+/**
+ *  Input de tipo:
+ *  kunnr kna1-kunnr,
+ *      ó
+ *  kunnr kna1,
+ * 
+ */
+ 
 module.exports = class extends Generator {
 
-
-    async main() {
+    async prompting() {
 
         this.oPreguntas = await this.prompt([
             {
@@ -25,6 +32,7 @@ module.exports = class extends Generator {
 
     processing() {
         var nombreArchivo = this.oPreguntas.nombreArchivoInput;
+        // @ts-ignore
         var sTypes = this.fs.read(this.contextRoot + '/' + nombreArchivo);
         var sTypesNoSpaces = sTypes.replace(/\s+/g, ' ').trim();
 
@@ -36,26 +44,35 @@ module.exports = class extends Generator {
         }
         // crea array
         var oArrayTypes = sTypesNoSpaces2.split(',');
-
-        oArrayTypes.map(
-            (a) => console.log(a)
-            )
-
-      var cc = oArrayTypes.map(
-            (a) => { 
+        
+        // crea string de salida
+        var oResult = oArrayTypes.map(
+            (a) => {
                 var sfname = a.trim().split(' ')[0];
                 var tabData = a.trim().split(' ')[1].split('-');
-                var tfield = tabData[0];
-                if (tabData[1]){ var tname = tabData[1] };
-                console.log( `(  tabname = '1' fieldname = '${sfname}'  ref_table = '${tfield}' ref_field = '${tname}' )` )
 
-                }
-            )
 
+                if (tabData.length === 2) {
+                    // tabla-campo
+                    var tfield = tabData[1];
+                    var tname = tabData[0];
+                } else {
+                    // tabla
+                    var tfield = sfname;
+                    var tname = tabData[0];
+                };
+
+                return `(  tabname = '1' fieldname = '${sfname}'  ref_table = '${tname}' ref_field = '${tfield}' )`
+            });
+            
+            this.sResult = oResult.join('\n');
 
     }
 
     writing() {
-
+        var nombreArchivo = this.oPreguntas.nombreArchivoOutput;
+        // @ts-ignore
+        var destinoArchivo = this.contextRoot + '/' + nombreArchivo;
+        this.fs.write(destinoArchivo, this.sResult);
     }
 };
