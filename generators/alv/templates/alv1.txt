@@ -10,7 +10,6 @@
       go_gridc<%= sufijo %> TYPE REF TO cl_gui_alv_grid
       .
 
-
 class-methods:
 
     muestra_alv<%= sufijo %>
@@ -54,7 +53,10 @@ CLASS lcl<%= sufijo %> IMPLEMENTATION.
 
 
 METHOD muestra_alv<%= sufijo %>.
-  DATA(lo_docking<%= sufijo %>) = NEW cl_gui_docking_container(
+    
+  IF lcl<%= sufijo %>=>go_gridc<%= sufijo %> is not initial.
+
+    DATA(lo_docking<%= sufijo %>) = NEW cl_gui_docking_container(
                                              parent    = cl_gui_container=>screen0 "screen1 o 2 si es con call screen starting at...ending at
                                              repid     = sy-repid
                                              dynnr     = '9000'
@@ -72,7 +74,7 @@ METHOD muestra_alv<%= sufijo %>.
     lcl<%= sufijo %>=>go_gridc<%= sufijo %> =  NEW cl_gui_alv_grid(
                                          i_parent =  lo_cell_top<%= sufijo %> ).
 										 
-     DATA(lt_fieldcatalog<%= sufijo %>) = lcl<%= sufijo %>=>get_fieldcatalog<%= sufijo %>( ).
+    DATA(lt_fieldcatalog<%= sufijo %>) = lcl<%= sufijo %>=>get_fieldcatalog<%= sufijo %>( ).
 
     DATA(ls_layout<%= sufijo %>) = lcl<%= sufijo %>=>get_layout<%= sufijo %>( ).
 
@@ -86,22 +88,22 @@ METHOD muestra_alv<%= sufijo %>.
     lcl<%= sufijo %>=>go_gridc<%= sufijo %>->register_edit_event( cl_gui_alv_grid=>mc_evt_enter ).
 
     SET HANDLER:
-   lcl<%= sufijo %>=>handle_toolbar<%= sufijo %>      FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>,
-   lcl<%= sufijo %>=>handle_user_command<%= sufijo %> FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>,
-   lcl<%= sufijo %>=>data_changed<%= sufijo %>        FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>,
-   lcl<%= sufijo %>=>handle_hotspot_click<%= sufijo %> FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>
+    lcl<%= sufijo %>=>handle_toolbar<%= sufijo %>       FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>,
+    lcl<%= sufijo %>=>handle_user_command<%= sufijo %>  FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>,
+    lcl<%= sufijo %>=>data_changed<%= sufijo %>         FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>,
+    lcl<%= sufijo %>=>handle_hotspot_click<%= sufijo %> FOR lcl<%= sufijo %>=>go_gridc<%= sufijo %>
        .
 
 * https://help.sap.com/saphelp_46c/helpdata/en/0a/b5533cd30911d2b467006094192fe3/content.htm?no_cache=true
 	   
 	lcl<%= sufijo %>=>go_gridc<%= sufijo %>->set_table_for_first_display(
         EXPORTING
-		is_variant                    = ls_variant<%= sufijo %>
-		i_save                        = 'A'        "muesetra boton de guardar variantes
+          is_variant                    = ls_variant<%= sufijo %>
+          i_save                        = 'A'        "muesetra boton de guardar variantes
           is_layout                     = ls_layout<%= sufijo %>
           it_toolbar_excluding          = lt_excluding<%= sufijo %>
         CHANGING
-		it_sort              		= lt_sort<%= sufijo %>
+		      it_sort              		      = lt_sort<%= sufijo %>
           it_outtab                     = lcl<%= sufijo %>=>gt_alv<%= sufijo %>
           it_fieldcatalog               = lt_fieldcatalog<%= sufijo %>
         EXCEPTIONS
@@ -113,7 +115,12 @@ METHOD muestra_alv<%= sufijo %>.
     IF sy-subrc <> 0.
     ENDIF.
 		
-		
+  Else.
+
+      lcl<%= sufijo %>=>go_gridc<%= sufijo %>->refresh_table_display( ).
+
+  Endif.
+
     CALL SCREEN '9000'.
 	
 ENDMETHOD.

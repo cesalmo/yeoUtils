@@ -2,6 +2,10 @@
   "name": "generator-util",
   "version": "0.1.0",
   "description": "generador alv",
+  "scripts": {
+    "debug:fcat_attach" : "node --inspect /home/cesalmo/.nvm/versions/node/v10.13.0/lib/node_modules/yo/lib/cli.js util:fcat",
+    "debug:alv_attach" : "node --inspect /home/cesalmo/.nvm/versions/node/v10.13.0/lib/node_modules/yo/lib/cli.js util:alv"
+  },
   "files": [
     "generators"
   ],
@@ -12,7 +16,6 @@
     "yeoman-generator": "^1.0.0"
   },
   "devDependencies": {
-    "@types/yeoman-generator": "^3.1.4",
-    "yo": "^3.1.1"
+    "@types/yeoman-generator": "^3.1.4"
   }
 }
